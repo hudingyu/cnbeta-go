@@ -1,0 +1,5 @@
+website: https://www.cnbeta.com/
+listBaseUrl: https://m.cnbeta.com/touch/default/timeline.json?page=
+contentBaseUrl: https://m.cnbeta.com/view/
+serverIp: http://10.4.226.82
+serverPort: 8081
