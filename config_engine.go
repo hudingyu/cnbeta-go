@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: hudingyu
+ * @Date: 2019-09-29 22:57:59
+ * @LastEditTime: 2019-09-29 23:45:10
+ * @LastEditors: Do not edit
+ */
 package config_engine
 
 import (
@@ -46,38 +53,38 @@ func (c *ConfigEngine) Get(name string) interface{} {
 	return nil
 }
 
-func (c *ConfigEngine) GetStruct(name string, des interface{}) interface{} {
+func (c *ConfigEngine) GetStruct(name string, desObj interface{}) interface{} {
 	data := c.Get(name)
 	switch data.(type) {
 	case string:
-		c.setField(des, name, data)
+		c.setField(desObj, name, data)
 	case map[interface{}]interface{}:
-		c.mapToStruct(data.(map[interface{}]interface{}), des)
+		c.mapToStruct(data.(map[interface{}]interface{}), desObj)
 	}
-	return des
+	return desObj
 }
 
-func (c *ConfigEngine) mapToStruct(source map[interface{}]interface{}, des interface{}) interface{} {
-	for key, value := range source {
+func (c *ConfigEngine) mapToStruct(sourceMap map[interface{}]interface{}, des interface{}) interface{} {
+	for key, value := range sourceMap {
 		c.setField(des, key.(string), value)
 	}
 	return des
 }
 
-func (c *ConfigEngine) setField(des interface{}, name string, value interface{}) error {
-	desStructValue := reflect.Indirect(reflect.ValueOf(des))
+func (c *ConfigEngine) setField(desStruct interface{}, name string, newValue interface{}) error {
+	desStructValue := reflect.Indirect(reflect.ValueOf(desStruct))
 	curFieldValue := desStructValue.FieldByName(name)
 
 	curFieldType := curFieldValue.Type()
-	nextValue := reflect.ValueOf(value)
+	nextValue := reflect.ValueOf(newValue)
 
 	if curFieldType.Kind() == reflect.Struct && nextValue.Kind() == reflect.Map {
-		for key, value := range value.(map[interface{}]interface{}) {
+		for key, value := range newValue.(map[interface{}]interface{}) {
 			c.setField(curFieldValue.Addr().Interface(), key.(string), value)
 		}
 	} else {
 		if curFieldType != nextValue.Type() {
-			return errors.New("Provided value type didn't match obj field type")
+			return errors.New("Provided value type didn't match desination struct field type")
 		}
 
 		curFieldValue.Set(nextValue)
