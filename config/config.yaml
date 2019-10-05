@@ -1,7 +1,15 @@
 Site: 
-  website: "https://www.cnbeta.com/"
-  listBaseUrl: "https://m.cnbeta.com/touch/default/timeline.json?page="
-  contentBaseUrl: "https://m.cnbeta.com/view/"
+  Website: "https://www.cnbeta.com/"
+  ListBaseURL: "https://m.cnbeta.com/touch/default/timeline.json?page="
+  ContentBaseURL: "https://m.cnbeta.com/view/"
+  TotalPage: 1
 Server: 
-  serverIp: "http://10.4.226.82"
-  serverPort: 8081
+  ServerIp: "http://10.4.226.82"
+  ServerPort: 8081
+MySQL:
+  UserName: "root"
+  Password: "320123"
+  LocalUrl: "localhost"
+  LocalPort: 3306
+  OriginIp: "172.26.8.62"
+  DbName: "cnbeta"

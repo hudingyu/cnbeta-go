@@ -1,20 +1,24 @@
 /*
- * @Description: 
+ * @Description:
  * @Author: hudingyu
  * @Date: 2019-09-26 22:47:26
- * @LastEditTime: 2019-09-26 22:47:26
- * @LastEditors: Do not edit
+ * @LastEditTime: 2019-10-05 14:57:59
+ * @LastEditors: Please set LastEditors
  */
 package main
 
 import (
-	"fmt"
-	"time"
+	confEngine "cnbeta-go/config"
+	logger "cnbeta-go/log"
+	mysqlWrapper "cnbeta-go/mysql"
+	spider "cnbeta-go/spider"
 )
 
 func main() {
-	start := time.Now()
+	logger.InitLogConf()
+	confEngine.InitConfEngine()
+	mysqlWrapper.InitDB()
 
-	elapsed := time.Since(start)
-	fmt.Printf("Took %s", elapsed)
+	spider.SpiderRun()
+
 }

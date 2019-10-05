@@ -2,8 +2,8 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-09-29 22:57:59
- * @LastEditTime: 2019-09-29 23:45:10
- * @LastEditors: Do not edit
+ * @LastEditTime: 2019-10-01 15:28:05
+ * @LastEditors: Please set LastEditors
  */
 package config_engine
 
@@ -20,6 +20,8 @@ import (
 type ConfigEngine struct {
 	data map[interface{}]interface{}
 }
+
+var Engine ConfigEngine
 
 func (c *ConfigEngine) LoadYaml(path string) error {
 	yamlFile, err := ioutil.ReadFile(path)
@@ -75,6 +77,15 @@ func (c *ConfigEngine) setField(desStruct interface{}, name string, newValue int
 	desStructValue := reflect.Indirect(reflect.ValueOf(desStruct))
 	curFieldValue := desStructValue.FieldByName(name)
 
+	if !curFieldValue.IsValid() {
+		fmt.Printf("No such field: %s in desStruct \n", name)
+		return fmt.Errorf("No such field: %s in desStruct", name)
+	}
+	if !curFieldValue.CanSet() {
+		fmt.Printf("Cannot set %s field value \n", name)
+		return fmt.Errorf("Cannot set %s field value", name)
+	}
+
 	curFieldType := curFieldValue.Type()
 	nextValue := reflect.ValueOf(newValue)
 
@@ -91,4 +102,13 @@ func (c *ConfigEngine) setField(desStruct interface{}, name string, newValue int
 	}
 
 	return nil
+}
+
+func InitConfEngine() {
+	Engine = ConfigEngine{}
+	err := Engine.LoadYaml("./config/config.yaml")
+	// err := engine.LoadYaml("../config/config.yaml")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
