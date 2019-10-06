@@ -8,8 +8,8 @@ type ArticleStruct struct {
 	Url          string `json:"url_show"`
 	Label        string `json:"label"`
 	Hometext     string
-	Summary      string
-	Content      string
+	Summary      string `gorm:"type:mediumText"`
+	Content      string `gorm:"type:longText"`
 	Csrf         string
 	Sn           string
 	Thumb        string `json:"thumb"`

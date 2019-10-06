@@ -31,7 +31,8 @@ func SpiderRun() {
 	siteConfig = SiteConf{}
 	configEngine.Engine.GetStruct("Site", &siteConfig)
 
-	ArticleListInit()
+	ArticleListCrawlerRun()
+	ContentCrawlerRun()
 }
 
 // func (c *ConfigEngine) getConf() *ConfigEngine {

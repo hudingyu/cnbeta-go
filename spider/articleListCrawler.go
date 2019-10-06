@@ -25,8 +25,8 @@ type articleListRespStruct struct {
  * @param {type}
  * @return:
  */
-func ArticleListInit() {
-	log.Println("grabbing article list starts...")
+func ArticleListCrawlerRun() {
+	fmt.Println("grabbing article list starts...")
 	start := time.Now()
 	pageUrlList := getPageUrlList(siteConfig.TotalPage)
 
@@ -67,7 +67,8 @@ func getArticleList(pageUrl string) {
 	}
 
 	defer resp.Body.Close()
-	defer mysqlWrapper.CloseDB()
+	// defer mysqlWrapper.CloseDB()
+
 	// body, err := ioutil.ReadAll(resp.Body)
 	// if err != nil {
 	// 	fmt.Println("read from resp.Body failed,err:", err)
@@ -82,7 +83,7 @@ func getArticleList(pageUrl string) {
 	}
 	articleList := data.Result.List
 	// fmt.Println(articleList[0])
-	if err := mysqlWrapper.SaveArticles(articleList); err != nil {
+	if err := mysqlWrapper.CacheArticles(articleList); err != nil {
 		fmt.Println("Saving to mysql failed, err:", err)
 	} else {
 		fmt.Println("Saving to mysql succeeded!")

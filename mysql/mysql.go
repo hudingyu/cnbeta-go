@@ -5,6 +5,7 @@ import (
 	"cnbeta-go/model"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -21,6 +22,9 @@ type dbConf struct {
 
 var db *gorm.DB
 
+func init() {
+
+}
 func InitDB() {
 	dbConfig := dbConf{}
 	configEngine.Engine.GetStruct("MySQL", &dbConfig)
@@ -42,18 +46,34 @@ func CloseDB() {
 	db.Close()
 }
 
-func SaveArticles(articles []model.ArticleStruct) error {
+func CacheArticles(articles []model.ArticleStruct) error {
 	for _, article := range articles {
-		if err := db.Create(&article).Error; err != nil {
-			log.Println("Inserting article failed with error:", err)
-			return err
+		var count int
+		db.Model(&model.ArticleStruct{}).Where("sid = ?", article.Sid).Count(&count)
+		if count == 0 {
+			if err := db.Create(&article).Error; err != nil {
+				log.Println("Inserting article failed with error:", err)
+				return err
+			}
+		} else {
+			// if err := db.Model(&article).Update(article).Error; err != nil {
+			// 	log.Println("Updating article failed with error:", err)
+			// 	return err
+			// }
+			// 执行原生SQL, 只更新部分需要更新的字段
+			sql, arguments := generateSQLForUpdatingArticle(article)
+			if err := db.Exec(sql, arguments...).Error; err != nil {
+				log.Println("Updating article failed with error:", err)
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 func UpdateArticle(article model.ArticleStruct) error {
-	if err := db.Model(&article).Update(article).Error; err != nil {
+	sql, arguments := generateSQLForUpdatingArticle(article)
+	if err := db.Exec(sql, arguments...).Error; err != nil {
 		log.Println("Updating article failed with error:", err)
 		return err
 	}
@@ -65,4 +85,38 @@ func QueryArticle(article *model.ArticleStruct) (model.ArticleStruct, error) {
 		return model.ArticleStruct{}, err
 	}
 	return *article, nil
+}
+
+func QueryUncachedArticles() ([]model.ArticleStruct, error) {
+	articleList := []model.ArticleStruct{}
+	err := db.Model(&model.ArticleStruct{}).Where("content = ?", "").Find(&articleList).Error
+	return articleList, err
+}
+
+func generateSQLForUpdatingArticle(article model.ArticleStruct) (string, []interface{}) {
+	var columns = make([]string, 0)
+	var arguments = make([]interface{}, 0)
+
+	if len(article.CommentCount) > 0 {
+		columns = append(columns, "comment_count = ?")
+		arguments = append(arguments, article.CommentCount)
+	}
+
+	if len(article.Source) > 0 {
+		columns = append(columns, "source = ?")
+		arguments = append(arguments, article.Source)
+	}
+
+	if len(article.Summary) > 0 {
+		columns = append(columns, "summary = ?")
+		arguments = append(arguments, article.Summary)
+	}
+
+	if len(article.Content) > 0 {
+		columns = append(columns, "content = ?")
+		arguments = append(arguments, article.Content)
+	}
+
+	sql := fmt.Sprintf("UPDATE article_structs SET %s WHERE sid = %s", strings.Join(columns, ","), article.Sid)
+	return sql, arguments
 }
