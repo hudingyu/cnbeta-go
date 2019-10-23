@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: hudingyu
+ * @Date: 2019-10-08 23:42:45
+ * @LastEditTime: 2019-10-23 23:42:42
+ * @LastEditors: Do not edit
+ */
 package mysql
 
 import (
@@ -90,6 +97,17 @@ func QueryArticle(article *model.ArticleStruct) (model.ArticleStruct, error) {
 func QueryUncachedArticles() ([]model.ArticleStruct, error) {
 	articleList := []model.ArticleStruct{}
 	err := db.Model(&model.ArticleStruct{}).Where("content = ?", "").Find(&articleList).Error
+	return articleList, err
+}
+
+func QueryArticleList(lastArticle *model.ArticleStruct, limit int) ([]model.ArticleStruct, error) {
+	articleList := []model.ArticleStruct{}
+	var err error
+	if lastArticle != nil {
+		err = db.Model(&model.ArticleStruct{}).Where("sid < ?", lastArticle.Sid).Order("Sid desc").Limit(limit).Find(&articleList).Error
+	} else {
+		err = db.Model(&model.ArticleStruct{}).Order("Sid desc").Limit(limit).Find(&articleList).Error
+	}
 	return articleList, err
 }
 
