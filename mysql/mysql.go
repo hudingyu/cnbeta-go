@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-08 23:42:45
- * @LastEditTime: 2019-10-24 11:05:16
+ * @LastEditTime: 2019-10-26 19:02:56
  * @LastEditors: Please set LastEditors
  */
 package mysql
@@ -87,11 +87,12 @@ func UpdateArticle(article model.ArticleStruct) error {
 	return nil
 }
 
-func QueryArticle(article *model.ArticleStruct) (model.ArticleStruct, error) {
-	if err := db.Model(article).Where("sid = ？", article.Sid).First(article).Error; err != nil {
+func QueryArticle(sid string) (model.ArticleStruct, error) {
+	article := model.ArticleStruct{}
+	if err := db.Model(article).Where("sid = ?", sid).First(&article).Error; err != nil {
 		return model.ArticleStruct{}, err
 	}
-	return *article, nil
+	return article, nil
 }
 
 func QueryUncachedArticles() ([]model.ArticleStruct, error) {
@@ -103,10 +104,10 @@ func QueryUncachedArticles() ([]model.ArticleStruct, error) {
 func QueryArticleList(limit int, lastSid int) ([]model.ArticleStruct, error) {
 	articleList := []model.ArticleStruct{}
 	var err error
-	if lastSid == 0 {
-		err = db.Model(&model.ArticleStruct{}).Where("sid < ?", lastSid).Order("Sid desc").Limit(limit).Find(&articleList).Error
+	if lastSid != 0 {
+		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Where("sid < ?", lastSid).Order("sid desc").Limit(limit).Find(&articleList).Error
 	} else {
-		err = db.Model(&model.ArticleStruct{}).Order("Sid desc").Limit(limit).Find(&articleList).Error
+		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Order("sid desc").Limit(limit).Find(&articleList).Error
 	}
 	return articleList, err
 }
