@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-08 23:42:45
- * @LastEditTime: 2019-10-26 19:02:56
+ * @LastEditTime: 2019-11-02 15:04:56
  * @LastEditors: Please set LastEditors
  */
 package mysql
@@ -37,7 +37,8 @@ func InitDB() {
 	configEngine.Engine.GetStruct("MySQL", &dbConfig)
 
 	var err error
-	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", dbConfig.UserName, dbConfig.Password, dbConfig.LocalUrl, dbConfig.LocalPort, dbConfig.DbName)
+	// dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", dbConfig.UserName, dbConfig.Password, dbConfig.LocalUrl, dbConfig.LocalPort, dbConfig.DbName)
+	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", dbConfig.UserName, dbConfig.Password, dbConfig.OriginIp, dbConfig.LocalPort, dbConfig.DbName)
 	db, err = gorm.Open("mysql", dbUrl)
 	// defer db.Close()
 	if err != nil {

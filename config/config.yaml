@@ -7,9 +7,9 @@ Server:
   ServerIp: "http://10.4.226.82"
   ServerPort: 8081
 MySQL:
-  UserName: "root"
+  UserName: "turling"
   Password: "320123"
   LocalUrl: "localhost"
   LocalPort: 3306
-  OriginIp: "172.26.8.62"
+  OriginIp: "52.194.181.207"
   DbName: "cnbeta"

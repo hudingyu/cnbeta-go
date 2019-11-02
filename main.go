@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-09-26 22:47:26
- * @LastEditTime: 2019-10-26 16:48:05
+ * @LastEditTime: 2019-11-02 15:08:05
  * @LastEditors: Please set LastEditors
  */
 package main
@@ -31,7 +31,7 @@ func main() {
 	}()
 
 	router := v1.NewRouter(v1.GenerateRoutes())
-	http.ListenAndServe(":8089", router)
+	http.ListenAndServe(":80", router)
 
 	mysqlWrapper.CloseDB()
 }
