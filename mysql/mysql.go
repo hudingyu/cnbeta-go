@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-08 23:42:45
- * @LastEditTime: 2019-11-02 15:04:56
+ * @LastEditTime: 2019-11-24 13:45:34
  * @LastEditors: Please set LastEditors
  */
 package mysql
@@ -106,9 +106,9 @@ func QueryArticleList(limit int, lastSid int) ([]model.ArticleStruct, error) {
 	articleList := []model.ArticleStruct{}
 	var err error
 	if lastSid != 0 {
-		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Where("sid < ?", lastSid).Order("sid desc").Limit(limit).Find(&articleList).Error
+		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count, url_show").Where("sid < ?", lastSid).Order("sid desc").Limit(limit).Find(&articleList).Error
 	} else {
-		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Order("sid desc").Limit(limit).Find(&articleList).Error
+		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count, url_show").Order("sid desc").Limit(limit).Find(&articleList).Error
 	}
 	return articleList, err
 }
