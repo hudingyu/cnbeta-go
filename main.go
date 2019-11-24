@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-09-26 22:47:26
- * @LastEditTime: 2019-11-10 12:59:37
+ * @LastEditTime: 2019-11-24 14:03:07
  * @LastEditors: Please set LastEditors
  */
 package main
@@ -31,5 +31,5 @@ func main() {
 	}()
 
 	router := v1.NewRouter(v1.GenerateRoutes())
-	http.ListenAndServe("127.0.0.0:8080", router)
+	http.ListenAndServe(":80", router)
 }
