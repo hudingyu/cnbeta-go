@@ -11,10 +11,8 @@ import (
 	confEngine "cnbeta-go/config"
 	logger "cnbeta-go/log"
 	mysqlWrapper "cnbeta-go/mysql"
-	"cnbeta-go/spider"
 	v1 "cnbeta-go/v1"
 	"net/http"
-	"time"
 )
 
 func main() {
@@ -22,13 +20,13 @@ func main() {
 	confEngine.InitConfEngine()
 	mysqlWrapper.InitDB()
 
-	go func() {
-		spider.SpiderRun()
-		ticker := time.NewTicker(10 * 60 * time.Second)
-		for _ = range ticker.C {
-			spider.SpiderRun()
-		}
-	}()
+	// go func() {
+	// 	spider.SpiderRun()
+	// 	ticker := time.NewTicker(10 * 60 * time.Second)
+	// 	for _ = range ticker.C {
+	// 		spider.SpiderRun()
+	// 	}
+	// }()
 
 	router := v1.NewRouter(v1.GenerateRoutes())
 	http.ListenAndServe(":80", router)

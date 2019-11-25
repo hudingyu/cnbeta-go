@@ -88,9 +88,16 @@ func proxyArticleContent(w http.ResponseWriter, r *http.Request, params httprout
 
 func proxyVideoList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	query := r.URL.Query()
-	last_bid, _ := strconv.Atoi(r.URL.Query()["b_id"][0])
+
+	var url string
+	if bid, ok := query["b_id"]; !ok {
+		url = "https://36kr.com/pp/api/info-flow/channel_video/videos?per_page=20"
+	} else {
+		lastBid, _ := strconv.Atoi(bid[0])
+		url = fmt.Sprintf("https://36kr.com/pp/api/info-flow/channel_video/videos?b_id=%d&per_page=20", lastBid)
+	}
+
 	client := &http.Client{}
-	url := fmt.Sprintf("https://36kr.com/pp/api/info-flow/channel_video/videos?b_id=%@&per_page=20", last_bid)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 	resp, err := client.Do(req)
