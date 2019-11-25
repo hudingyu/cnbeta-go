@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-23 22:23:39
- * @LastEditTime: 2019-10-26 19:04:48
+ * @LastEditTime: 2019-11-25 15:50:07
  * @LastEditors: Please set LastEditors
  */
 package v1
@@ -10,6 +10,9 @@ package v1
 import (
 	mysqlWrapper "cnbeta-go/mysql"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -60,7 +63,55 @@ func FetchArticle(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	}
 }
 
+func proxyArticleContent(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	sid := params.ByName("sid")
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", fmt.Sprintf("https://www.cnbeta.com/articles/%s.htm", sid), nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("HTTP request failed, err:", err)
+		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Println("Http status code:", resp.StatusCode)
+		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	defer resp.Body.Close()
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	data, _ := ioutil.ReadAll(resp.Body)
+	w.Write(data)
+}
+
+func proxyVideoList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	query := r.URL.Query()
+	last_bid, _ := strconv.Atoi(r.URL.Query()["b_id"][0])
+	client := &http.Client{}
+	url := fmt.Sprintf("https://36kr.com/pp/api/info-flow/channel_video/videos?b_id=%@&per_page=20", last_bid)
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("HTTP request failed, err:", err)
+		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+	}
+	if resp.StatusCode != http.StatusOK {
+		log.Println("Http status code:", resp.StatusCode)
+		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	defer resp.Body.Close()
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	data, _ := ioutil.ReadAll(resp.Body)
+	w.Write(data)
+}
+
 func handleErrorResponse(w http.ResponseWriter, status int, errMsg string) {
 	w.WriteHeader(http.StatusInternalServerError)
-	json.NewEncoder(w).Encode(&failureResponse{StatusCode: http.StatusInternalServerError, Err: errMsg})
+	json.NewEncoder(w).Encode(&failureResponse{StatusCode: status, Err: errMsg})
 }
