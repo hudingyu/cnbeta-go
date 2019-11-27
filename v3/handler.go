@@ -18,17 +18,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type successResponse struct {
-	StatusCode int         `json:"status_code"`
-	Message    string      `json:"message"`
-	Result     interface{} `json:"result"`
-}
-
-type failureResponse struct {
-	StatusCode int    `json:"status_code"`
-	Err        string `json:"err"`
-}
-
 func FetchArticleList(c *gin.Context) {
 	lastSid, _ := strconv.Atoi(c.DefaultQuery("last_sid", "0"))
 	articleList, err := mysqlWrapper.QueryArticleList(35, lastSid)

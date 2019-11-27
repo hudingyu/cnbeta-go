@@ -10,7 +10,7 @@ func NewRouter(routes []Route) http.Handler {
 	router := gin.Default()
 
 	for _, route := range routes {
-		router.GET(route.Path, route.HandleFunc)
+		router.GET(route.Path, Cors(route.HandleFunc))
 	}
 	return router
 }
