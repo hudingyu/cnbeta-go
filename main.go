@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-09-26 22:47:26
- * @LastEditTime: 2019-11-26 21:02:00
+ * @LastEditTime: 2019-11-27 20:36:50
  * @LastEditors: Please set LastEditors
  */
 package main
@@ -12,7 +12,7 @@ import (
 	logger "cnbeta-go/log"
 	mysqlWrapper "cnbeta-go/mysql"
 	"cnbeta-go/spider"
-	v1 "cnbeta-go/v1"
+	v3 "cnbeta-go/v3"
 	"net/http"
 	"time"
 )
@@ -30,6 +30,7 @@ func main() {
 		}
 	}()
 
-	router := v1.NewRouter(v1.GenerateRoutes())
+	// router := v1.NewRouter(v1.GenerateRoutes())
+	router := v3.NewRouter(v3.GenerateRoutes())
 	http.ListenAndServe(":80", router)
 }
