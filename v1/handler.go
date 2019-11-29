@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-23 22:23:39
- * @LastEditTime: 2019-11-25 15:50:07
+ * @LastEditTime: 2019-11-29 11:30:56
  * @LastEditors: Please set LastEditors
  */
 package v1
@@ -37,6 +37,7 @@ func FetchArticleList(w http.ResponseWriter, r *http.Request, params httprouter.
 	articleList, err := mysqlWrapper.QueryArticleList(35, lastSid)
 	if err != nil {
 		handleErrorResponse(w, http.StatusNotFound, "Record Not Found")
+		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
@@ -55,6 +56,7 @@ func FetchArticle(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	article, err := mysqlWrapper.QueryArticle(sid)
 	if err != nil {
 		handleErrorResponse(w, http.StatusNotFound, "Record Not Found")
+		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
@@ -72,11 +74,13 @@ func proxyArticleContent(w http.ResponseWriter, r *http.Request, params httprout
 	if err != nil {
 		log.Println("HTTP request failed, err:", err)
 		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Http status code:", resp.StatusCode)
 		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	defer resp.Body.Close()
@@ -104,10 +108,12 @@ func proxyVideoList(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 	if err != nil {
 		log.Println("HTTP request failed, err:", err)
 		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Http status code:", resp.StatusCode)
 		handleErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	defer resp.Body.Close()

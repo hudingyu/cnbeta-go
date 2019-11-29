@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-23 22:23:39
- * @LastEditTime: 2019-11-27 20:46:28
+ * @LastEditTime: 2019-11-29 11:38:34
  * @LastEditors: Please set LastEditors
  */
 package v3
@@ -23,6 +23,7 @@ func FetchArticleList(c *gin.Context) {
 	articleList, err := mysqlWrapper.QueryArticleList(35, lastSid)
 	if err != nil {
 		c.String(http.StatusNotFound, "Record Not Found")
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -37,6 +38,7 @@ func FetchArticle(c *gin.Context) {
 	article, err := mysqlWrapper.QueryArticle(sid)
 	if err != nil {
 		c.String(http.StatusNotFound, "Record Not Found")
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -55,11 +57,13 @@ func proxyArticleContent(c *gin.Context) {
 	if err != nil {
 		log.Println("HTTP request failed, err:", err)
 		c.String(http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Http status code:", resp.StatusCode)
 		c.String(http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	defer resp.Body.Close()
@@ -85,10 +89,12 @@ func proxyVideoList(c *gin.Context) {
 	if err != nil {
 		log.Println("HTTP request failed, err:", err)
 		c.String(http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Http status code:", resp.StatusCode)
 		c.String(http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	defer resp.Body.Close()
