@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-23 22:23:39
- * @LastEditTime: 2019-11-29 11:38:34
+ * @LastEditTime: 2019-12-03 12:16:39
  * @LastEditors: Please set LastEditors
  */
 package v3
@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
 )
 
@@ -67,9 +68,21 @@ func proxyArticleContent(c *gin.Context) {
 	}
 
 	defer resp.Body.Close()
-	data, _ := ioutil.ReadAll(resp.Body)
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		fmt.Println("Fail to parse html, err:", err)
+	}
+	title, _ := doc.Find(".title h1").Html()
+	title = fmt.Sprintf("<header class=\"title\"><h1>%s</h1></header>", title)
+	summary, _ := doc.Find(".article-summary p").Html()
+	summary = fmt.Sprintf("<div class=\"article-summary\"><p>%s</p></div>", summary)
+	content, _ := doc.Find(".article-content").Html()
+	content = fmt.Sprintf("<div class=\"article-content\">%s</div>", content)
+	author, _ := doc.Find(".cnbeta-article-vote-tags").Html()
+	article := fmt.Sprintf("%s%s%s", summary, content, author)
+	// data, _ := ioutil.ReadAll(resp.Body)
 	c.Header("Content-Type", "text/html; charset=utf-8")
-	c.String(http.StatusOK, string(data))
+	c.String(http.StatusOK, article)
 }
 
 func proxyVideoList(c *gin.Context) {
