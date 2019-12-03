@@ -2,7 +2,7 @@
  * @Description:
  * @Author: hudingyu
  * @Date: 2019-10-23 22:23:39
- * @LastEditTime: 2019-12-03 12:58:49
+ * @LastEditTime: 2019-12-03 12:59:53
  * @LastEditors: Please set LastEditors
  */
 package v3
@@ -80,6 +80,7 @@ func proxyArticleContent(c *gin.Context) {
 	content = fmt.Sprintf("<div class=\"article-content\">%s</div>", content)
 	author, _ := doc.Find(".article-author").Html()
 	author = fmt.Sprintf("<div class=\"article-author\">%s</div>", author)
+
 	article := fmt.Sprintf("%s%s%s%s", title, summary, content, author)
 	// data, _ := ioutil.ReadAll(resp.Body)
 	c.Header("Content-Type", "text/html; charset=utf-8")

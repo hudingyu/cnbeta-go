@@ -48,7 +48,7 @@ func ArticleListCrawlerRun() {
 func getPageUrlList(totalPage int) []string {
 	var pageUrlList []string = make([]string, 0)
 	for page := 1; page <= totalPage; page++ {
-		pageUrlList = append(pageUrlList, fmt.Sprintf("%s%d", siteConfig.ListBaseURL, page))
+		pageUrlList = append(pageUrlList, fmt.Sprintf("%s%d", siteConfig.ListBaseURL, page+4))
 	}
 	return pageUrlList
 }
