@@ -30,6 +30,18 @@ func ContentCrawlerRun() {
 	for _, article := range articleList {
 		go func(article model.ArticleStruct) {
 			defer wg.Done()
+
+			// defer func() {
+			// 	// 发生宕机时，获取panic传递的上下文并打印
+			// 	err := recover()
+			// 	switch err.(type) {
+			// 	case runtime.Error: // 运行时错误
+			// 		fmt.Println("runtime error:", err)
+			// 	default: // 非运行时错误
+			// 		fmt.Println("error:", err)
+			// 	}
+			// }()
+
 			crawlArticleContent(article)
 		}(article)
 	}
@@ -45,18 +57,22 @@ func crawlArticleContent(article model.ArticleStruct) {
 	req, _ := http.NewRequest("GET", pageUrl, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 	resp, err := client.Do(req)
+
 	if err != nil {
 		log.Println("HTTP request failed, err:", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		log.Println("Http status code:", resp.StatusCode)
+		return
 	}
 
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Println("Http status code:", resp.StatusCode)
+		return
+	}
+
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		fmt.Println("Fail to parse html, err:", err)
+		return
 	}
 
 	styleReg := regexp.MustCompile(` style="[^"]*"`)

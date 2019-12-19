@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -36,6 +37,18 @@ func ArticleListCrawlerRun() {
 	for _, pageUrl := range pageUrlList {
 		go func(url string) {
 			defer wg.Done()
+
+			defer func() {
+				// 发生宕机时，获取panic传递的上下文并打印
+				err := recover()
+				switch err.(type) {
+				case runtime.Error: // 运行时错误
+					fmt.Println("runtime error:", err)
+				default: // 非运行时错误
+					fmt.Println("error:", err)
+				}
+			}()
+
 			getArticleList(url)
 		}(pageUrl)
 	}
@@ -62,11 +75,12 @@ func getArticleList(pageUrl string) {
 		log.Println("Http get err:", err)
 		return
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		log.Println("Http status code:", resp.StatusCode)
+		return
 	}
 
-	defer resp.Body.Close()
 	// defer mysqlWrapper.CloseDB()
 
 	// body, err := ioutil.ReadAll(resp.Body)
