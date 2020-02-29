@@ -84,11 +84,6 @@ func getArticleList(pageUrl string) {
 	// defer mysqlWrapper.CloseDB()
 
 	// body, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	fmt.Println("read from resp.Body failed,err:", err)
-	// 	return
-	// }
-	// fmt.Printf("%s\n", body)
 
 	data := articleListRespStruct{}
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
@@ -96,7 +91,6 @@ func getArticleList(pageUrl string) {
 		return
 	}
 	articleList := data.Result.List
-	// fmt.Println(articleList[0])
 	if err := mysqlWrapper.CacheArticles(articleList); err != nil {
 		fmt.Println("Saving to mysql failed, err:", err)
 	} else {
