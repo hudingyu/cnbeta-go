@@ -106,9 +106,11 @@ func QueryArticleList(limit int, lastSid int) ([]model.ArticleStruct, error) {
 	articleList := []model.ArticleStruct{}
 	var err error
 	if lastSid != 0 {
-		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Where("sid < ?", lastSid).Order("sid desc").Limit(limit).Find(&articleList).Error
+		err = db.Raw("SELECT sid, title, pub_time, summary, thumb, comment_count FROM article_structs WHERE sid < ? ORDER BY CAST(sid AS UNSIGNED) DESC LIMIT ?", lastSid, limit).Scan(&articleList).Error
+		// err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Where("sid < ?", lastSid).Order("sid desc").Limit(limit).Find(&articleList).Error
 	} else {
-		err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Order("sid desc").Limit(limit).Find(&articleList).Error
+		err = db.Raw("SELECT sid, title, pub_time, summary, thumb, comment_count FROM article_structs ORDER BY CAST(sid AS UNSIGNED) DESC LIMIT ?", limit).Scan(&articleList).Error
+		// err = db.Model(&model.ArticleStruct{}).Select("sid, title, pub_time, summary, thumb, comment_count").Order("sid desc").Limit(limit).Find(&articleList).Error
 	}
 	return articleList, err
 }

@@ -25,7 +25,7 @@ func main() {
 	go func() {
 		spider.SpiderRun()
 		ticker := time.NewTicker(10 * 60 * time.Second)
-		for _ = range ticker.C {
+		for range ticker.C {
 			spider.SpiderRun()
 		}
 	}()
